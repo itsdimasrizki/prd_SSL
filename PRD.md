@@ -170,32 +170,31 @@ ulang.
 
 **Tujuan:** Menjelaskan gagasan konsistensi prediksi pada variasi input.
 
-1.  **Ide inti:** Prediksi model diharapkan relatif konsisten pada
-    variasi input yang relevan.
-2.  **Augmentasi atau perturbasi:** Input diubah secara terkontrol.
-3.  **Konsistensi:** Model didorong agar prediksinya tidak berubah
-    secara tidak semestinya.
-4.  **Contoh metode:** FixMatch dapat disebut sebagai contoh pendekatan
-    consistency-based SSL, bukan metode utama paper IHGCN.
+1.  **Ide inti:** Model dipaksa untuk menghasilkan prediksi yang konsisten dan stabil meskipun data *input* sengaja di perturbasi atau modifikasi.
+2.  **Dua versi augmentasi atau perturbasi:** Input diubah secara terkontrol menjadi dua versi untuk menguji prediksi model.
+    *    *Augmentasi Lemah:* Perubahan kecil/halus (Misal pada CV: Pemograman Web menjadi Web Dev)
+    *    *Augmentasi Kuat:* Perubahan yang lebih drastis atau kompleks namun tetap mempertahankan esensi keahliannya.
+4.  **Mekanisme Konsistensi:** Model memproses data *augmentasi lemah* untuk membuat tebakan sementara (*pseudo-label*). Jika tebakan ini diyakini benar, label tersebut akan dijadikan 'kunci jawaban' (target pengawasan) untuk melatih data versi *augmentasi kuat*.
+5.  **Contoh Metode (FixMatch):** FixMatch adalah algoritma populer di keluarga ini yang menggunakan ambang batas keyakinan (*confidence threshold*) untuk menyaring *pseudo-label*. 
+    *(Catatan: Berikan penegasan visual bahwa FixMatch HANYA contoh komparasi dari keluarga SSL berbasis konsistensi, BUKAN metode utama dari paper rekomendasi pekerjaan IHGCN).*
 
-**Visual utama:** Satu contoh data, dua variasi input, dan prediksi yang
-diharapkan konsisten.
+**Visual utama:** 1 dokumen CV orisinal ditarik menjadi dua arah (CV Variasi Lemah & CV Variasi Kuat) → masuk ke dalam Model AI → menghasilkan *output* prediksi kategori pekerjaan yang identik (timbangan seimbang).
+
 
 ### Poster 6 --- Graph-Based Semi-Supervised Learning
 
-**Tujuan:** Menyiapkan pembaca untuk memahami pendekatan paper utama.
+**Tujuan:** Menyiapkan pembaca memahami pendekatan dasar berbasis graf dan GCN sebelum masuk ke metode spesifik paper utama.
 
-1.  **Node:** Mewakili objek, misalnya resume.
-2.  **Edge:** Mewakili hubungan antarobjek, misalnya kemiripan atau
-    relasi tertentu.
-3.  **Informasi graf:** Hubungan antarnode membantu model mempelajari
-    representasi dan memprediksi label.
-4.  **GCN:** Graph Convolutional Network menggabungkan informasi dari
-    lingkungan node sesuai struktur graf.
+1.  **Konsep Dasar Graf:** 
+    *   **Node (Titik):** Mewakili entitas atau objek data tunggal. Dalam konteks kita, satu node adalah satu profil/resume pelamar.
+    *   **Edge (Garis):** Mewakili hubungan atau koneksi antara dua objek (misal: kesamaan riwayat tontonan/kunjungan profil).
+2.  **Mengubah Gambar Menjadi Angka:** Agar komputer memahami struktur graf ini, koneksi antar-*node* dicatat dalam sebuah tabel atau matriks yang disebut **Adjacency Matrix** (Matriks Ketetanggaan), sedangkan informasi isi CV disimpan dalam **Feature Matrix**.
+3.  **Ide Inti GCN (Graph Convolutional Network):** Menggunakan *Neighborhood Aggregation*. Sebuah *node* memperbarui informasi fitur dirinya sendiri dengan cara mengumpulkan dan merangkum informasi dari *node-node* tetangga yang terhubung langsung dengannya (tetangga orde-pertama).
+4.  **Aliran Label dalam SSL:** Dalam *Graph-based SSL*, informasi dari sebagian kecil *node* yang sudah memiliki label pekerjaan akan "mengalir" melalui *edge* untuk membantu memprediksi *node* lain yang belum memiliki label.
 
-**Visual utama:** Graf kecil berisi node resume dengan sebagian label
-diketahui. Jangan menggambarkan struktur ilustratif sebagai graf asli
-paper.
+**Visual utama:** 
+Ilustrasi titik-titik (node) yang saling terhubung garis (edge). Sebagian *node* sudah memiliki warna (berlabel kategori), dan menunjukkan visualisasi warna tersebut mengalir ke *node* abu-abu (tidak berlabel) di sekitarnya. 
+*(Catatan Akurasi: Tambahkan keterangan bahwa ini adalah ilustrasi GCN standar, arsitektur IHGCN yang lebih lengkap akan dibahas di Poster 10).*
 
 ### Poster 7 --- Alur Umum SSL
 
