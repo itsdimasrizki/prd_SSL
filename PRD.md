@@ -170,15 +170,21 @@ ulang.
 
 **Tujuan:** Menjelaskan gagasan konsistensi prediksi pada variasi input.
 
-1.  **Ide inti:** Model dipaksa untuk menghasilkan prediksi yang konsisten dan stabil meskipun data *input* sengaja di perturbasi atau modifikasi.
+1.  **Ide inti:**Model dipaksa untuk menghasilkan prediksi yang konstan meskipun data input diberi modifikasi (augmentasi).
 2.  **Dua versi augmentasi atau perturbasi:** Input diubah secara terkontrol menjadi dua versi untuk menguji prediksi model.
     *    *Augmentasi Lemah:* Perubahan kecil/halus (Misal pada CV: Pemograman Web menjadi Web Dev)
     *    *Augmentasi Kuat:* Perubahan yang lebih drastis atau kompleks namun tetap mempertahankan esensi keahliannya.
-4.  **Mekanisme Konsistensi:** Model memproses data *augmentasi lemah* untuk membuat tebakan sementara (*pseudo-label*). Jika tebakan ini diyakini benar, label tersebut akan dijadikan 'kunci jawaban' (target pengawasan) untuk melatih data versi *augmentasi kuat*.
-5.  **Contoh Metode (FixMatch):** FixMatch adalah algoritma populer di keluarga ini yang menggunakan ambang batas keyakinan (*confidence threshold*) untuk menyaring *pseudo-label*. 
-    *(Catatan: Berikan penegasan visual bahwa FixMatch HANYA contoh komparasi dari keluarga SSL berbasis konsistensi, BUKAN metode utama dari paper rekomendasi pekerjaan IHGCN).*
+4.  *Flowchart Program FixMatch:** *  **Mulai:** Ambil satu data tak berlabel $x$.
+    *   **Proses Paralel:** Buat $x\_weak$ (augmentasi lemah) dan $x\_strong$ (augmentasi kuat).
+    *   **Proses 1:** Model memprediksi $x\_weak$ menghasilkan *pseudo-label* $y$.
+    *   **Keputusan (If):** Apakah probabilitas $y > Threshold$?
+    *   **Ya:** Jadikan $y$ sebagai target (kunci jawaban) untuk menghitung *Loss* (tingkat kesalahan) dari prediksi $x\_strong$.
+    *   **Tidak:** Abaikan data $x$.
+    *   **Proses Akhir:** Perbarui bobot model menggunakan *Loss* yang didapat.
+    *(Catatan Kritis: Berikan penegasan bahwa FixMatch HANYA contoh, BUKAN metode utama dari paper IHGCN).*
 
-**Visual utama:** 1 dokumen CV orisinal ditarik menjadi dua arah (CV Variasi Lemah & CV Variasi Kuat) → masuk ke dalam Model AI → menghasilkan *output* prediksi kategori pekerjaan yang identik (timbangan seimbang).
+**Visual utama:** Flowchart program yang bercabang dua (untuk $x\_weak$ dan $x\_strong$), lalu bertemu di perhitungan *Loss* jika lolos pengecekan logika.
+    *(Catatan: Berikan penegasan visual bahwa FixMatch HANYA contoh komparasi dari keluarga SSL berbasis konsistensi, BUKAN metode utama dari paper rekomendasi pekerjaan IHGCN).*
 
 
 ### Poster 6 --- Graph-Based Semi-Supervised Learning
@@ -186,15 +192,16 @@ ulang.
 **Tujuan:** Menyiapkan pembaca memahami pendekatan dasar berbasis graf dan GCN sebelum masuk ke metode spesifik paper utama.
 
 1.  **Konsep Dasar Graf:** 
-    *   **Node (Titik):** Mewakili entitas atau objek data tunggal. Dalam konteks kita, satu node adalah satu profil/resume pelamar.
-    *   **Edge (Garis):** Mewakili hubungan atau koneksi antara dua objek (misal: kesamaan riwayat tontonan/kunjungan profil).
-2.  **Mengubah Gambar Menjadi Angka:** Agar komputer memahami struktur graf ini, koneksi antar-*node* dicatat dalam sebuah tabel atau matriks yang disebut **Adjacency Matrix** (Matriks Ketetanggaan), sedangkan informasi isi CV disimpan dalam **Feature Matrix**.
-3.  **Ide Inti GCN (Graph Convolutional Network):** Menggunakan *Neighborhood Aggregation*. Sebuah *node* memperbarui informasi fitur dirinya sendiri dengan cara mengumpulkan dan merangkum informasi dari *node-node* tetangga yang terhubung langsung dengannya (tetangga orde-pertama).
-4.  **Aliran Label dalam SSL:** Dalam *Graph-based SSL*, informasi dari sebagian kecil *node* yang sudah memiliki label pekerjaan akan "mengalir" melalui *edge* untuk membantu memprediksi *node* lain yang belum memiliki label.
+    *   **Node:** Objek data (resume).
+    *   **Edge:** Koneksi antar objek (relasi *also-viewed*).
+2.  **Flowchart Program (GCN Dasar):**
+    *   **Input:** Baca *Feature Matrix* $X$ (daftar fitur isi CV) dan *Adjacency Matrix* $A$ (peta relasi antar CV).
+    *   **Proses (Konvolusi Lapis 1):** Kalikan $X$ dengan $A$ dan bobot model $W_0$, lalu beri aktivasi ReLU (Setiap *node* merangkum fitur dari tetangga orde-pertama).
+    *   **Proses (Konvolusi Lapis 2):** Ulangi proses di atas dengan bobot $W_1$ (Setiap *node* menyerap informasi lebih luas).
+    *   **Output (Klasifikasi):** Terapkan fungsi *Softmax* untuk mendapatkan probabilitas kategori pekerjaan (Technical, Management, dll).
+    *   **Evaluasi:** Hitung *Cross-Entropy Loss* untuk memperbaiki bobot.
 
-**Visual utama:** 
-Ilustrasi titik-titik (node) yang saling terhubung garis (edge). Sebagian *node* sudah memiliki warna (berlabel kategori), dan menunjukkan visualisasi warna tersebut mengalir ke *node* abu-abu (tidak berlabel) di sekitarnya. 
-*(Catatan Akurasi: Tambahkan keterangan bahwa ini adalah ilustrasi GCN standar, arsitektur IHGCN yang lebih lengkap akan dibahas di Poster 10).*
+**Visual utama:** Flowchart arsitektur jaringan saraf sederhana berupa blok-blok komputasi linier (Input Matriks → Lapisan Tersembunyi 1 → Lapisan Tersembunyi 2 → Softmax Output).
 
 ### Poster 7 --- Alur Umum SSL
 
@@ -213,23 +220,18 @@ identik.
 bergantung pada algoritma; alur IHGCN dijelaskan lebih khusus pada
 Poster 10.
 
-### Poster 8 --- Studi Kasus: Kategori Pekerjaan dari Resume
+#### Poster 8 --- Studi Kasus: Kategori Pekerjaan dari Resume
 
-**Tujuan:** Mengaitkan teori SSL dengan masalah yang diteliti paper.
+**Tujuan:** Mengaitkan teori SSL dengan masalah nyata yang diteliti pada paper, khusus untuk *Early Job Seekers*.
 
-1.  **Input:** Informasi resume, seperti pendidikan dan keterampilan,
-    sesuai fitur yang dibahas dalam paper.
-2.  **Tantangan:** Mengategorikan banyak resume membutuhkan data dan
-    label yang memadai.
-3.  **Target paper:** Klasifikasi ke enam kategori pekerjaan yang
-    digunakan penelitian.
-4.  **Batas interpretasi:** Sistem menghasilkan klasifikasi/rekomendasi
-    kategori, bukan keputusan final penerimaan kerja.
+1.  **Tantangan Kelangkaan Label:** Mengkategorikan *resume* butuh label dari pakar rekrutmen. Label manual memakan waktu $> 500$ jam.
+2.  **Target Spesifik (Early Job Seekers):** Penegasan mengapa fitur 'Pengalaman Kerja' dihapus dari sistem. Target model adalah lulusan baru yang belum masuk pasar kerja, sehingga fitur pengalaman tidak relevan.
+3.  **Reduksi Dimensi Input:** Seluruh informasi pelamar direduksi menjadi dua dimensi pokok:
+    *   **Pendidikan (Education):** Terdiri dari Gelar (*Degree*), Jurusan (*Major*), dan Peringkat Universitas (*Uname*).
+    *   **Keterampilan (Skill):** Daftar keahlian yang diekstraksi dari profil.
+4.  **Kategori Output:** Model akan mengklasifikasikan input ke 6 kategori asli paper: *Technical, Management, Operational, Marketing, Functional, Research & Development*.
 
-**Visual utama:** Resume → pemrosesan/representasi → kategori pekerjaan.
-
-**Kategori asli paper:** Technical, Management, Operational, Marketing,
-Functional, Research & Development.
+**Visual utama:** Diagram alir input-output. Kotak Input (Education & Skill) → Tanda Panah ke Sistem Klasifikasi → Kotak Output (6 Kategori Pekerjaan).
 
 ### Poster 9 --- Paper Utama dan Masalah yang Dipecahkan
 
